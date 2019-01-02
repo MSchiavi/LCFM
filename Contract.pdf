@@ -16,11 +16,6 @@
 
  (p1-p2)[\nu]*)
 
- Contract::usage = "Contraction between two lorentz objects.
-   Contract[ \[Eta][\[Mu],\[Nu]]*(p1-p2)[\[Mu]] ]-> (p1-p2)[\[Nu]]
-   Contract[p1[\[Mu]]*p2[\[Mu]]]-> p1.p2";
-
-   
  Contract[expr_] := Module[{ans = expr},
    For[i = 0, i <= 4, i++,
        ans = ans //. (A_)[a_] (B_)[a_] :> A.B;
@@ -66,59 +61,6 @@
          ans = ans //.d[a_]\[Eta][a_,b_]:> d[b];
          ];
      Return[ans]]
-
-     FunctionalD[expr_, f_[y_]] :=
-
-  With[{xs =
-     DeleteDuplicates[
-      Cases[expr, f[x_ /; FreeQ[x, _f]] :> x, {0, Infinity}]]},
-   Total[D[expr, f[#]] DiracDelta[# - y] /.
-\!\(\*SuperscriptBox[\(Int\),
-TagBox[
-RowBox[{"(",
-RowBox[{"1", ",", "0", ",", "0"}], ")"}],
-Derivative],
-MultilineFunction->None]\)[i_, j_, k_] :> Int[D[i, f[#]], j, k]/
-         D[i, f[#]] /.
-\!\(\*SuperscriptBox[\(Int\),
-TagBox[
-RowBox[{"(",
-RowBox[{"1", ",", "0"}], ")"}],
-Derivative],
-MultilineFunction->None]\)[i_, j_] :> Int[D[i, f[#]], j]/
-        D[i, f[#]] & /@ xs]]
-
-
-        LD[expr_, f_[y_, \[Mu]_]] := Module[{L, ans, xs, \[Mu]s},
-  L = {};
-  xs = DeleteDuplicates[
-    Cases[expr, f[x_ /; FreeQ[x, _f], \[Nu]_] :> x, {0, Infinity}]];
-  \[Mu]s =
-   DeleteDuplicates[
-    Cases[expr,
-     f[x_, \[Nu]_ /; FreeQ[\[Nu], _f]] :> \[Nu], {0, Infinity}]];
-  For[i = 1, i <= Length[xs], i++,
-   L = Append[L,
-     D[expr, f[xs[[i]], \[Mu]s[[i]]]] DiracDelta[
-         xs[[i]] - y] \[Eta][\[Mu]s[[i]], \[Mu]] /.
-\!\(\*SuperscriptBox[\(Int\),
-TagBox[
-RowBox[{"(",
-RowBox[{"1", ",", "0", ",", "0"}], ")"}],
-Derivative],
-MultilineFunction->None]\)[m_, n_, o_] :>
-        Int[D[m, f[xs[[i]], \[Mu]s[[i]]]], n, o]/
-        D[m, f[xs[[i]], \[Mu]s[[i]]]] /.
-\!\(\*SuperscriptBox[\(Int\),
-TagBox[
-RowBox[{"(",
-RowBox[{"1", ",", "0"}], ")"}],
-Derivative],
-MultilineFunction->None]\)[m_, n_] :>
-       Int[D[m, f[xs[[i]], \[Mu]s[[i]]]], n]/
-       D[m, f[xs[[i]], \[Mu]s[[i]]]] ] ];
-  ans = Total[L];
-  Return[ans]]
 
   Mandelstam[expr_] := Module[{ans = expr},
         ans = ans //. Subscript[p, i_].Subscript[p, j_] :> s[i, j]/2;
